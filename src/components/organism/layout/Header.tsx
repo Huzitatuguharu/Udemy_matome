@@ -1,22 +1,24 @@
-import { memo, VFC } from "react";
-import {
-  Box,
-  Flex,
-  Heading,
-  Link,
-  IconButton,
-  Drawer,
-  DrawerOverlay,
-  DrawerBody,
-  Button,
-  useDisclosure,
-  DrawerContent
-} from "@chakra-ui/react";
-import { HamburgerIcon } from "@chakra-ui/icons";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { memo, useCallback, VFC } from "react";
+import { Box, Flex, Heading, Link, useDisclosure } from "@chakra-ui/react";
+import { useHistory } from "react-router-dom";
+
+import { MenuIconButton } from "../../atoms/button/MenuIconButton";
+import { MenuDrawer } from "../../molecules/MenuDrawer";
 
 export const Header: VFC = memo(() => {
   // return <div style={{ height: "50px", backgroundColor: "red" }}>Header</div>;
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const history = useHistory();
+
+  const onClickHome = useCallback(() => history.push("/home"), []);
+  const onClickUserManagement = useCallback(
+    () => history.push("/home/UserManagement"),
+    []
+  );
+  const onClickSetting = useCallback(() => history.push("/home/setting"), []);
+
   return (
     <>
       <Flex
@@ -27,7 +29,13 @@ export const Header: VFC = memo(() => {
         justify="space-between"
         padding={{ base: 5, md: 6 }}
       >
-        <Flex align="center" as="a" mr={10} _hover={{ cursor: "pointer" }}>
+        <Flex
+          align="center"
+          as="a"
+          mr={8}
+          _hover={{ cursor: "pointer" }}
+          onClick={onClickHome}
+        >
           <Heading as="h1" fontSize={{ base: "md", md: "lg" }}>
             ユーザー管理アプリ
           </Heading>
@@ -37,34 +45,24 @@ export const Header: VFC = memo(() => {
           align="center"
           fontSize="sm"
           flexGrow={2}
-          display={{ base: "none", md: "lg" }}
+          display={{ base: "none", md: "flex" }}
         >
-          <Box pr={5}>
-            <Link>ユーザー一覧</Link>
-            <Link>設定</Link>
+          <Box pr={4}>
+            <Link onClick={onClickUserManagement}>ユーザー一覧</Link>
           </Box>
+
+          <Link onClick={onClickSetting}>設定</Link>
         </Flex>
-        <IconButton
-          aria-label="メニュー"
-          icon={<HamburgerIcon />}
-          size="sm"
-          variant="unstyled"
-          display={{ base: "block", md: "none" }}
-          onClick={onOpen}
-        />
+        <MenuIconButton onOpen={onOpen} />
       </Flex>
 
-      <Drawer placement="left" size="xs" isOpen={isOpen} onClose={onClose}>
-        <DrawerOverlay>
-          <DrawerContent>
-            <DrawerBody p={0} bg="gray.100">
-              <Button w="100%">TOP</Button>
-              <Button w="100%">ユーザー一覧</Button>
-              <Button w="100%">設定</Button>
-            </DrawerBody>
-          </DrawerContent>
-        </DrawerOverlay>
-      </Drawer>
+      <MenuDrawer
+        onClose={onClose}
+        isOpen={isOpen}
+        onClickHome={onClickHome}
+        onClickUserManagement={onClickUserManagement}
+        onClickSetting={onClickSetting}
+      />
     </>
   );
 });
